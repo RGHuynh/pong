@@ -16,7 +16,6 @@ function love.load()
     vsync = true
   })
 
-
   -- use for any text look
   local smallFont = love.graphics.newFont('font.ttf', 8)
 
@@ -30,25 +29,54 @@ function love.load()
 
   Player1Y = 30
   Player2Y = VIRTUAL_HEIGHT - 50
+
+  math.randomseed(os.time())
+
+  BallX = VIRTUAL_WIDTH / 2 - 2
+  BallY = VIRTUAL_HEIGHT / 2 - 2
+
+  BallDX = math.random(2) == 1 and 100 or -100
+  BallDY = math.random(-50, 50)
+
+
+  gameState = 'start'
 end
 
 function love.keypressed(key)
   if key == 'escape' then
     love.event.quit()
+  elseif key == 'enter' or key == 'return' then
+    if gameState == 'start' then
+      gameState = 'play'
+    else
+      gameState = 'start'
+      BallX = VIRTUAL_WIDTH / 2 - 2
+      BallY = VIRTUAL_HEIGHT / 2 - 2
+
+
+      BallDX = math.random(2) == 1 and 100 or -100
+      BallDY = math.random(-50, 50) * 1.5
+    end
   end
 end
 
 function love.update(dt)
   if love.keyboard.isDown('w') then
-    Player1Y = Player1Y + -PADDLE_SPEED * dt
+    Player1Y = math.max(0, Player1Y + -PADDLE_SPEED * dt)
   elseif love.keyboard.isDown('s') then
-    Player1Y = Player1Y + PADDLE_SPEED * dt
+    Player1Y = math.min(VIRTUAL_HEIGHT - 20, Player1Y + PADDLE_SPEED * dt)
   end
 
   if love.keyboard.isDown('up') then
-    Player2Y = Player2Y + -PADDLE_SPEED * dt
+    Player2Y = math.max(0, Player2Y + -PADDLE_SPEED * dt)
   elseif love.keyboard.isDown('down') then
-    Player2Y = Player2Y + PADDLE_SPEED * dt
+    Player2Y = math.min(VIRTUAL_HEIGHT - 20, Player2Y + PADDLE_SPEED * dt)
+  end
+
+
+  if gameState == 'play' then
+    BallX = BallX + BallDX * dt
+    BallY = BallY + BallDY * dt
   end
 end
 
@@ -65,6 +93,6 @@ function love.draw()
 
   love.graphics.rectangle('fill', VIRTUAL_WIDTH - 10, Player2Y, 5, 20)
 
-  -- love.graphics.rectangle('fill', VIRTUAL_WIDTH / 2 - 2, VIRTUAL_HEIGHT / 2 - 2, 5, 5)
+  love.graphics.rectangle('fill', BallX, BallY, 5, 5)
   push:apply('end')
 end
