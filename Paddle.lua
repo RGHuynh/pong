@@ -11,6 +11,8 @@ function Paddle:new(x, y, width, height)
   paddle.height = height
   paddle.dy = 0
 
+  paddle.update = self.update
+  paddle.render = self.render
   return paddle
 end
 

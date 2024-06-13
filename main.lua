@@ -1,12 +1,12 @@
 local push = require 'libraries.push'
 local Paddle = require 'Paddle'
 local Constants = require 'utils.constants'
+local Ball = require 'Ball'
+
 local WINDOW_WIDTH = Constants.WINDOW_WIDTH
 local WINDOW_HEIGHT = Constants.WINDOW_HEIGHT
-
 local VIRTUAL_WIDTH = Constants.VIRTUAL_WIDTH
 local VIRTUAL_HEIGHT = Constants.VIRTUAL_HEIGHT
-
 local PADDLE_SPEED = Constants.PADDLE_SPEED
 
 function love.load()
@@ -27,9 +27,6 @@ function love.load()
   love.graphics.setFont(ScoreFont)
   math.randomseed(os.time())
 
-  BallX = VIRTUAL_WIDTH / 2 - 2
-  BallY = VIRTUAL_HEIGHT / 2 - 2
-
   Player1Score = 0
   Player2Score = 0
 
@@ -40,6 +37,8 @@ function love.load()
 
   Player1 = Paddle:new(10, 30, 5, 20)
   Player2 = Paddle:new(VIRTUAL_WIDTH - 10, VIRTUAL_HEIGHT - 30, 5, 20)
+
+  CubeBall = Ball:new(VIRTUAL_WIDTH / 2 - 2, VIRTUAL_HEIGHT / 2 - 2)
 end
 
 function love.keypressed(key)
@@ -50,11 +49,8 @@ function love.keypressed(key)
       GameState = Constants.PLAY
     else
       GameState = Constants.START
-      BallX = VIRTUAL_WIDTH / 2 - 2
-      BallY = VIRTUAL_HEIGHT / 2 - 2
 
-      BallDX = math.random(2) == 1 and 100 or -100
-      BallDY = math.random(-50, 50) * 1.5
+      CubeBall:keyPressed()
     end
   end
 end
@@ -74,8 +70,7 @@ function love.update(dt)
 
 
   if GameState == 'play' then
-    BallX = BallX + BallDX * dt
-    BallY = BallY + BallDY * dt
+    CubeBall:update(dt)
   end
 
   Player1:update(dt)
@@ -92,7 +87,7 @@ function love.draw()
   love.graphics.print(tostring(Player1Score), VIRTUAL_WIDTH / 2 - 50, VIRTUAL_HEIGHT / 3)
   love.graphics.print(tostring(Player2Score), VIRTUAL_WIDTH / 2 + 30, VIRTUAL_HEIGHT / 3)
 
-  love.graphics.rectangle('fill', BallX, BallY, 5, 5)
+  CubeBall:render()
   Player1:render()
   Player2:render()
   push:apply('end')
