@@ -18,11 +18,11 @@ function love.load()
   })
 
   -- use for any text look
-  local smallFont = love.graphics.newFont('font.ttf', 8)
+  SmallFont = love.graphics.newFont('font.ttf', 8)
 
   ScoreFont = love.graphics.newFont('font.ttf', 32)
 
-  love.graphics.setFont(smallFont)
+  love.graphics.setFont(SmallFont)
 
   love.graphics.setFont(ScoreFont)
   math.randomseed(os.time())
@@ -31,9 +31,6 @@ function love.load()
   Player2Score = 0
 
   GameState = 'start'
-
-  BallDX = math.random(2) == 1 and 100 or -100
-  BallDY = math.random(-50, 50)
 
   Player1 = Paddle:new(10, 30, 5, 20)
   Player2 = Paddle:new(VIRTUAL_WIDTH - 10, VIRTUAL_HEIGHT - 30, 5, 20)
@@ -84,11 +81,16 @@ function love.draw()
 
   love.graphics.printf('Hello Pong', 0, VIRTUAL_HEIGHT / 2 - 6, VIRTUAL_WIDTH, 'center')
 
+  love.graphics.setFont(ScoreFont)
   love.graphics.print(tostring(Player1Score), VIRTUAL_WIDTH / 2 - 50, VIRTUAL_HEIGHT / 3)
   love.graphics.print(tostring(Player2Score), VIRTUAL_WIDTH / 2 + 30, VIRTUAL_HEIGHT / 3)
 
   CubeBall:render()
   Player1:render()
   Player2:render()
+
+  love.graphics.setFont(SmallFont)
+  love.graphics.setColor(0, 255, 0, 255)
+  love.graphics.print('FPS ' .. tostring(love.timer.getFPS()), 10, 10)
   push:apply('end')
 end
