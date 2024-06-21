@@ -35,7 +35,7 @@ function love.load()
   Player1 = Paddle:new(10, 30, 5, 20)
   Player2 = Paddle:new(VIRTUAL_WIDTH - 10, VIRTUAL_HEIGHT - 30, 5, 20)
 
-  CubeBall = Ball:new(VIRTUAL_WIDTH / 2 - 2, VIRTUAL_HEIGHT / 2 - 2)
+  CubeBall = Ball:new(VIRTUAL_WIDTH / 2 - 2, VIRTUAL_HEIGHT / 2 - 2, 5, 5)
 end
 
 function love.keypressed(key)
@@ -57,17 +57,81 @@ function love.update(dt)
     Player1.dy = -PADDLE_SPEED
   elseif love.keyboard.isDown('s') then
     Player1.dy = PADDLE_SPEED
+  else
+    Player1.dy = 0
   end
 
   if love.keyboard.isDown('up') then
     Player2.dy = -PADDLE_SPEED
   elseif love.keyboard.isDown('down') then
     Player2.dy = PADDLE_SPEED
+  else
+    Player2.dy = 0
+  end
+
+  if love.keyboard.isDown('a') then
+    Player1.dx = -PADDLE_SPEED
+  elseif love.keyboard.isDown('d') then
+    Player1.dx = PADDLE_SPEED
+  end
+
+  if love.keyboard.isDown('left') then
+    Player2.dx = -PADDLE_SPEED
+  elseif love.keyboard.isDown('right') then
+    Player2.dx = PADDLE_SPEED
   end
 
 
   if GameState == 'play' then
     CubeBall:update(dt)
+
+    if CubeBall:collide(Player1) then
+      CubeBall.dx = -CubeBall.dx + 1.03
+      CubeBall.x = Player1.x + 5
+
+      if CubeBall.dy < 0 then
+        CubeBall.dy = -math.random(10, 150)
+      else
+        CubeBall.dy = math.random(10, 150)
+      end
+    end
+
+    if CubeBall:collide(Player2) then
+      CubeBall.dx = -CubeBall.dx * 1.03
+      CubeBall.x = Player2.x - 4
+
+      if CubeBall.dy < 0 then
+        CubeBall.dy = -math.random(10, 150)
+      else
+        CubeBall.dy = math.random(10, 150)
+      end
+    end
+
+    -- ball hitting the top
+    if CubeBall.y <= 0 then
+      CubeBall.y = 0
+      CubeBall.dy = -CubeBall.dy
+    end
+
+    -- ball hitting the bottom
+    if CubeBall.y >= VIRTUAL_HEIGHT - 4 then
+      CubeBall.y = VIRTUAL_HEIGHT - 4
+      CubeBall.dy = -CubeBall.dy
+    end
+  end
+
+
+  -- Score
+  if CubeBall.x < 0 then
+    Player2Score = Player2Score + 1
+    GameState = 'start'
+    CubeBall:keyPressed()
+  end
+
+  if CubeBall.x > VIRTUAL_WIDTH then
+    Player1Score = Player1Score + 1
+    GameState = 'start'
+    CubeBall:keyPressed()
   end
 
   Player1:update(dt)
